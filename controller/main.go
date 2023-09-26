@@ -1,13 +1,13 @@
 package controller
 
 import (
+	"ecommerce/constants"
 	"ecommerce/models"
 	"ecommerce/service"
 	"fmt"
 	"log"
 	"net/http"
 
-	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -23,37 +23,51 @@ func UpdateCart(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
 		return
 	}
-	fmt.Println(cart)
+	t1, err := service.ExtractCustomerID(cart.CustomerId, constants.SecretKey)
+	if err != nil {
+		fmt.Println("errorin Extaxt Token")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Token"})
+		return
+	}
+	cart.CustomerId = t1
+
 	result := service.UpdateCart(cart)
 	c.JSON(http.StatusOK, result)
 }
 func Login(c *gin.Context) {
-	var Details models.Login
-	if err := c.BindJSON(&Details); err != nil {
+	var request models.Login
+	if err := c.BindJSON(&request); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
+		return
+	}
+	token, success, err := service.Login(request)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return
+	}
+	if success {
+		c.JSON(http.StatusOK, gin.H{"token": token})
+	} else {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+	}
+}
+
+func Products(c *gin.Context) {
+	var cartproducts *models.Addtocart
+
+	if err := c.BindJSON(&cartproducts); err != nil {
 		fmt.Println("error")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
 		return
 	}
-	result := service.Login(Details)
-	fmt.Println(result)
-	if result {
-		session := sessions.Default(c)
-		session.Set("authenticated", true)
-		if err := session.Save(); err != nil {
-			fmt.Println("Error saving session:", err)
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal server error"})
-			return
-		}
-		auth := session.Get("authenticated")
-		fmt.Println("auth in controller",auth)
-		fmt.Println("No error")
+	token, err := service.ExtractCustomerID(cartproducts.Token, constants.SecretKey)
+	if err != nil {
+		fmt.Println("errorin Extaxt Token")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Token"})
+		return
 	}
-	c.JSON(http.StatusOK, result)
-
-}
-
-func Products(c *gin.Context) {
-	cart := service.Cart()
+	cart := service.Cart(token)
+	fmt.Println(cart)
 	c.JSON(http.StatusOK, cart)
 }
 
@@ -64,8 +78,21 @@ func Addtocart(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
 		return
 	}
+	fmt.Println(addtocart.Token)
+	fmt.Println(constants.SecretKey)
+	token, err := service.ExtractCustomerID(addtocart.Token, constants.SecretKey)
+	if err != nil {
+		fmt.Println("errorin Extaxt Token")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Token"})
+		return
+	}
+	var addtocart1 models.Addtocart1
+	addtocart1.CustomerId = token
+	addtocart1.Name = addtocart.Name
+	addtocart1.Price = addtocart.Price
+
 	fmt.Println(addtocart)
-	result := service.Addtocart(addtocart)
+	result := service.Addtocart(addtocart1)
 	c.JSON(http.StatusOK, result)
 
 }
