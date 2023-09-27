@@ -5,6 +5,8 @@ import (
 )
 
 type Customer struct {
+	CustomerId      string `json:"customerid" bson:"customerid"`
+	Email           string `json:"email" bson:"email"`
 	Name            string `json:"name" bson:"name"`
 	Phone_No        int    `json:"phonenumber" bson:"phonenumber"`
 	Age             int    `json:"age" bson:"age"`
@@ -18,24 +20,29 @@ type Customer struct {
 	Pincode         int64  `json:"pincode" bson:"pincode"`
 }
 type Inventory struct {
-    ItemCategory string  `json:"itemcategory" bson:"itemcategory"`
-    ItemName     string  `json:"itemname" bson:"itemname"`
-    Price        float64 `json:"price" bson:"price"`
-    Quantity     string  `json:"quantity" bson:"quantity"`
-    Image        string  `json:"image" bson:"image"`
+	ItemCategory string  `json:"itemcategory" bson:"itemcategory"`
+	ItemName     string  `json:"itemname" bson:"itemname"`
+	Price        float64 `json:"price" bson:"price"`
+	Quantity     string  `json:"quantity" bson:"quantity"`
+	Image        string  `json:"image" bson:"image"`
 }
 
-
-
 type Addtocart struct {
+	Token string  `json:"token" bson:"token"`
+	Name  string  `json:"name" bson:"name"`
+	Price float64 `json:"price" bson:"price"`
+}
+type Addtocart1 struct {
+	CustomerId string  `json:"customerid" bson:"customerid"`
 	Name  string  `json:"name" bson:"name"`
 	Price float64 `json:"price" bson:"price"`
 }
 type Login struct {
-	Name     string `json:"name" bson:"name"`
+	Email    string `json:"email" bson:"email"`
 	Password string `json:"password" bson:"password"`
 }
 type Cart struct {
+	CustomerId string `json:"token"`
 	Name       string  `json:"name"`
 	Price      float64 `json:"price"`
 	Quantity   int     `json:"quantity"`

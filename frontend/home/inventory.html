@@ -22,7 +22,8 @@
         }
 
         .product {
-            background-color: #f9f9f9; /* Light gray background */
+            background-color: #f9f9f9;
+            /* Light gray background */
             border: 1px solid #ccc;
             padding: 20px;
             margin: 10px;
@@ -35,14 +36,16 @@
         }
 
         .product h2 {
-            color: #007bff; /* Blue */
+            color: #007bff;
+            /* Blue */
             font-size: 2rem;
             margin-bottom: 10px;
             text-transform: uppercase;
         }
 
         .product p {
-            color: #555; /* Dark Gray */
+            color: #555;
+            /* Dark Gray */
             margin: 10px;
             text-align: left;
             font-size: 1.5rem;
@@ -59,7 +62,8 @@
         }
 
         .product .quantity button {
-            background-color: #28a745; /* Green */
+            background-color: #28a745;
+            /* Green */
             color: #fff;
             border: none;
             padding: 5px 10px;
@@ -73,7 +77,8 @@
         }
 
         .product .add-to-cart button {
-            background-color: #ff5722; /* Deep Orange */
+            background-color: #ff5722;
+            /* Deep Orange */
             color: #fff;
             border: none;
             padding: 5px 10px;
@@ -91,7 +96,8 @@
         #buy-now-button {
             display: inline-block;
             margin: 20px 0;
-            background-color: #007bff; /* Blue */
+            background-color: #007bff;
+            /* Blue */
             color: #fff;
             border: none;
             padding: 10px 20px;
@@ -101,9 +107,12 @@
         }
 
         .product img.product-image {
-            width: 200px; /* Set a fixed width */
-            height: 200px; /* Set a fixed height */
-            object-fit: cover; /* Maintain aspect ratio and cover the container */
+            width: 200px;
+            /* Set a fixed width */
+            height: 200px;
+            /* Set a fixed height */
+            object-fit: cover;
+            /* Maintain aspect ratio and cover the container */
             margin-top: 20px;
             border-radius: 30px;
         }
@@ -111,6 +120,11 @@
 </head>
 
 <body>
+    <script>
+        var urlParams = new URLSearchParams(window.location.search);
+        var token = urlParams.get('token');
+    </script>
+
     <h1>Inventory Items</h1>
     <div class="product-container" id="product-container">
         <!-- Inventory items will be dynamically added here -->
@@ -152,6 +166,7 @@
                     addToCartButton.addEventListener('click', () => {
                         // Create an object with the product name and price
                         const cartItem = {
+                            token: token,
                             name: item.itemname,
                             price: item.price
                         };

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <style>
         body {
@@ -27,28 +28,34 @@
             margin: 10px;
             border-radius: 8px;
             box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
-            width: 400px; /* Increased box size */
-            display: flex; /* Change display property to flex */
-            flex-direction: column; /* Add flex-direction: column */
+            width: 400px;
+            /* Increased box size */
+            display: flex;
+            /* Change display property to flex */
+            flex-direction: column;
+            /* Add flex-direction: column */
         }
 
         .product h2 {
-            
+
             color: #333;
             font-size: 1.5rem;
             margin-bottom: 10px;
-            text-transform: uppercase; /* Convert text to uppercase */
+            text-transform: uppercase;
+            /* Convert text to uppercase */
         }
 
         .product p {
             color: #777;
             margin: 10px 0;
-            text-align: right; /* Align text to the right inside the box */
+            text-align: right;
+            /* Align text to the right inside the box */
         }
 
         .product .quantity {
             display: flex-right;
-            justify-content: flex-end; /* Align quantity to the right */
+            justify-content: flex-end;
+            /* Align quantity to the right */
         }
 
         .product .quantity button {
@@ -61,16 +68,19 @@
             border-radius: 4px;
             margin: 0 5px;
         }
-        
+
         #total-cost {
-            text-align: right; /* Align total cost to the left */
+            text-align: right;
+            /* Align total cost to the left */
             margin-top: 20px;
             font-size: 1.2rem;
         }
 
         #buy-now-button {
-            display: inline-block; /* Make Buy Now button inline */
-            margin: 20px 0; /* Adjust margin for Buy Now button */
+            display: inline-block;
+            /* Make Buy Now button inline */
+            margin: 20px 0;
+            /* Adjust margin for Buy Now button */
             background-color: #007bff;
             color: #fff;
             border: none;
@@ -81,12 +91,19 @@
         }
     </style>
 </head>
+
 <body>
+
+    <script>
+        var urlParams = new URLSearchParams(window.location.search);
+        var token = urlParams.get('token');
+    </script>
+
     <h1>Items in your Cart</h1>
     <center>
-    <div class="product-container" id="product-container">
-        <!-- Product items will be dynamically added here -->
-    </div>
+        <div class="product-container" id="product-container">
+            <!-- Product items will be dynamically added here -->
+        </div>
     </center>
     <div id="total-cost">
         Total Cost: $<span id="total-cost-value">0.00</span>
@@ -99,9 +116,19 @@
         const buyNowButton = document.getElementById('buy-now-button');
 
         // Function to fetch and display products
-        async function fetchAndDisplayProducts() {
+        async function fetchAndDisplayProducts(token) {
+            console.log("111")
             try {
-                const response = await fetch('/products'); // Replace with your backend API endpoint
+                const data = {
+                    token: token
+                };
+                const response = await fetch('/products', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });// Replace with your backend API endpoint
                 const products = await response.json();
 
                 // Loop through the products and create product cards
@@ -166,6 +193,7 @@
         async function updateCart(productName, productPrice, productQuantity) {
             try {
                 const data = {
+                    token: token,
                     name: productName,
                     price: productPrice,
                     quantity: productQuantity
@@ -198,7 +226,8 @@
         }
 
         // Fetch and display products when the page loads
-        fetchAndDisplayProducts();
+        fetchAndDisplayProducts(token);
     </script>
 </body>
+
 </html>
