@@ -14,6 +14,7 @@ import (
 
 var Customer_Collection *mongo.Collection
 var Cart_Collection *mongo.Collection
+var Seller_Collection *mongo.Collection
 var Inventory_Collection *mongo.Collection
 
 
@@ -27,6 +28,7 @@ func init() {
 	fmt.Println("MongoDb sucessfully connected")
 	Customer_Collection = client.Database(constants.DB_Name).Collection(constants.Customer_collection)
     Cart_Collection = client.Database(constants.DB_Name).Collection(constants.Cart_collection)
+	Seller_Collection = client.Database(constants.DB_Name).Collection(constants.Seller_Collection)
 	Inventory_Collection = client.Database(constants.DB_Name).Collection(constants.Inventory_Collection)
-	fmt.Println("Collection Connected")
+	fmt.Println("All Collection Connected")
 }

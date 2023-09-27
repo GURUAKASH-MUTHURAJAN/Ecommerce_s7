@@ -27,13 +27,25 @@ type Inventory struct {
 	Image        string  `json:"image" bson:"image"`
 }
 
-type Addtocart struct {
-	Token string  `json:"token" bson:"token"`
-	Name  string  `json:"name" bson:"name"`
-	Price float64 `json:"price" bson:"price"`
-}
 type Addtocart1 struct {
 	CustomerId string  `json:"customerid" bson:"customerid"`
+	Name       string  `json:"name" bson:"name"`
+	Price      float64 `json:"price" bson:"price"`
+}
+type Seller struct {
+	Seller_Name     string `json:"sellername" bson:"sellername"`
+	Seller_Email    string `json:"selleremail" bson:"selleremail"`
+	Password        string `json:"password" bson:"password"`
+	ConfirmPassword string `json:"confirmpassword" bson:"confirmpassword"`
+	Phone_No        int    `json:"phoneno" bson:"phoneno"`
+	Address         string `json:"address" bson:"address"`
+}
+type Delete struct {
+	Collection string `json:"collection" bson:"collection"`
+	IdValue    string `json:"idValue" bson:"idValue"`
+}
+type Addtocart struct {
+	Token string  `json:"token" bson:"token"`
 	Name  string  `json:"name" bson:"name"`
 	Price float64 `json:"price" bson:"price"`
 }
@@ -42,7 +54,7 @@ type Login struct {
 	Password string `json:"password" bson:"password"`
 }
 type Cart struct {
-	CustomerId string `json:"token"`
+	CustomerId string  `json:"token"`
 	Name       string  `json:"name"`
 	Price      float64 `json:"price"`
 	Quantity   int     `json:"quantity"`
@@ -67,4 +79,11 @@ type Customer_Response struct {
 	Street_Name     string             `json:"streetname" bson:"streetname"`
 	City            string             `json:"city" bson:"city"`
 	Pincode         int64              `json:"pincode" bson:"pincode"`
+}
+
+type Update struct {
+	Collection string `json:"collection" bson:"collection"`
+	IdName     string `json:"email" bson:"email"`
+	Field      string `json:"field" bson:"field"`
+	New_Value  string `json:"newvalue" bson:"newvalue"`
 }

@@ -11,11 +11,36 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func Getinventorydata(c *gin.Context) {
+	Inventorydata := service.Getinventorydata()
+	fmt.Println(Inventorydata)
+	c.JSON(http.StatusOK, Inventorydata)
+}
 func Getalldata(c *gin.Context) {
 	alltransaction := service.Getalldata()
+	fmt.Println(alltransaction)
 	c.JSON(http.StatusOK, alltransaction)
 }
+func CreateSeller(c *gin.Context) {
+	var seller models.Seller
+	if err := c.BindJSON(&seller); err != nil {
+		fmt.Println("error")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
+		return
+	}
+	fmt.Println(seller)
+	createseller := service.CreateSeller(seller)
 
+	c.JSON(http.StatusOK, createseller)
+
+}
+func Getallsellerdata(c *gin.Context) {
+	fmt.Println("In seller")
+	Getallsellerdata := service.Getallsellerdata()
+	fmt.Println(Getallsellerdata)
+	c.JSON(http.StatusOK, Getallsellerdata)
+
+}
 func UpdateCart(c *gin.Context) {
 	var cart models.Cart
 	if err := c.BindJSON(&cart); err != nil {
@@ -117,7 +142,6 @@ func Inventory(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
 		return
 	}
-	fmt.Println(inventory)
 	result := service.Inventory(inventory)
 	fmt.Println(result)
 	c.JSON(http.StatusOK, result)
@@ -143,4 +167,47 @@ func Search(c *gin.Context) {
 	}
 	SearchName = search.ProductName
 	fmt.Println(search)
+}
+
+func Update(c *gin.Context){
+	var update models.Update
+	if err := c.BindJSON(&update); err != nil {
+		fmt.Println("error")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
+		return
+	}
+	fmt.Println(update)
+	result := service.Update(update)
+	c.JSON(http.StatusOK, result)
+	
+}
+
+func Delete(c *gin.Context){
+	var delete models.Delete
+	if err := c.BindJSON(&delete); err != nil {
+		fmt.Println("error")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
+		return
+	}
+	fmt.Println(delete)
+	result := service.Delete(delete)
+	fmt.Println(result)
+	c.JSON(http.StatusOK, result)
+
+
+}
+
+
+func CheckSeller(c *gin.Context){
+	var check models.Login
+	if err := c.BindJSON(&check); err != nil {
+		fmt.Println("error")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
+		return
+	}
+	fmt.Println(check)
+	result := service.CheckSeller(check)
+	fmt.Println(result)
+	c.JSON(http.StatusOK, result)
+
 }

@@ -153,37 +153,37 @@
     <div class="navigation">
         <ul>
             <li class="list active">
-                <a href="#">
+                <a href="http://localhost:8081/home" target="_blank">
                     <span class="icon"><ion-icon name="home-outline"></ion-icon></span>
                     <span class="text">Home</span>
                 </a>
             </li>
 
             <li class="list">
-                <a href="#">
+                <a href="http://localhost:8081/signin" target="_blank">
                     <span class="icon"><ion-icon name="person-outline"></ion-icon></span>
                     <span class="text">Signin</span>
                 </a>
             </li>
 
             <li class="list">
-                <a href="#">
-                    <span class="icon"><ion-icon name="chatbubble-outline"></ion-icon></span>
+                <a href="http://localhost:8081/signup" target="_blank">
+                    <span class="icon"><ion-icon name="person-circle"></ion-icon></span>
                     <span class="text">Signup</span>
                 </a>
             </li>
 
             <li class="list">
-                <a href="#">
+                <a href="http://localhost:8081/admin" target="_blank">
                     <span class="icon"><ion-icon name="camera-outline"></ion-icon></span>
-                    <span class="text">Admin Login</span>
+                    <span class="text">Admin</span>
                 </a>
             </li>
 
             <li class="list">
-                <a href="#">
+                <a href="http://localhost:8081/seller" target="_blank">
                     <span class="icon"><ion-icon name="settings-outline"></ion-icon></span>
-                    <span class="text">About Us</span>
+                    <span class="text">Seller</span>
                 </a>
             </li>
             <div class="indicator"></div>
@@ -203,20 +203,20 @@
     <script>
         // Create a mapping of text to icon names
         const iconMapping = {
-          "Home": "home-outline",
-          "Signin": "person-outline",
-          "Signup": "chatbubble-outline",
-          "Admin Login": "camera-outline",
-          "About Us": "settings-outline"
+            "Home": "home",
+            "Signin": "person",
+            "Signup": "person-add",
+            "Admin": "shield-checkmark",
+            "Seller": "briefcase",
         };
-        
+
         // Update icons based on text
         const icons = document.querySelectorAll('.icon ion-icon');
         icons.forEach(icon => {
-          const text = icon.closest('.list').querySelector('.text').textContent;
-          if (iconMapping.hasOwnProperty(text)) {
-            icon.setAttribute('name', iconMapping[text]);
-          }
+            const text = icon.closest('.list').querySelector('.text').textContent;
+            if (iconMapping.hasOwnProperty(text)) {
+                icon.setAttribute('name', iconMapping[text]);
+            }
         });
     </script>
 </body>

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller Dashboard</title>
+</head>
+<body>
+    <div id="login-form">
+        <h1>Seller Login</h1>
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br>
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br>
+        <button id="login-button">Login</button>
+    </div>
+
+    <div id="dashboard" style="display: none;">
+        <h1>Seller Dashboard</h1>
+        <button id="create-product-button">Create Product</button>
+        <button id="delete-product-button">Delete Product</button>
+        <button id="update-product-button">Update Product</button>
+    </div>
+
+    <div id="inventory-form" style="display: none;">
+        <h1>Add Item to Inventory</h1>
+        <form id="inventoryForm">
+            <label for="itemCategory">Item Category:</label>
+            <input type="text" id="itemCategory" name="itemcategory" required>
+
+            <label for="itemName">Item Name:</label>
+            <input type="text" id="itemName" name="itemname" required>
+
+            <label for="price">Price:</label>
+            <input type="number" id="price" name="price" required>
+
+            <label for="quantity">Quantity:</label>
+            <input type="text" id="quantity" name="quantity" required>
+
+            <label for="image">Image:</label>
+            <input type="file" id="image" name="image" accept="image/*" required>
+
+            <button type="submit">Add Item</button>
+        </form>
+    </div>
+
+    <script>
+        const loginForm = document.getElementById("login-form");
+        const dashboard = document.getElementById("dashboard");
+        const inventoryForm = document.getElementById("inventory-form");
+        const emailInput = document.getElementById("email");
+        const passwordInput = document.getElementById("password");
+        const loginButton = document.getElementById("login-button");
+        const createProductButton = document.getElementById("create-product-button");
+        const deleteProductButton = document.getElementById("delete-product-button");
+        const updateProductButton = document.getElementById("update-product-button");
+
+        // Event listener for the login button
+        loginButton.addEventListener("click", () => {
+            const email = emailInput.value;
+            const password = passwordInput.value;
+
+            // Create a structured object with email and password
+            const loginData = {
+                email: email,
+                password: password
+            };
+
+            // Send a POST request to the backend route "/sellercheck" with the structured object
+            fetch("/sellercheck", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(loginData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data === true) {
+                    alert("Login Successful");
+
+                    // Hide the login form and show the dashboard
+                    loginForm.style.display = "none";
+                    dashboard.style.display = "block";
+                } else {
+                    alert("Invalid email or password. Please try again.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        });
+
+        // Event listener for the "Create Product" button
+        createProductButton.addEventListener("click", () => {
+            // Hide the dashboard and show the inventory form
+            dashboard.style.display = "none";
+            inventoryForm.style.display = "block";
+        });
+
+        // JavaScript to handle form submission
+        document.getElementById("inventoryForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            const imageFile = document.getElementById("image").files[0];
+            const reader = new FileReader();
+
+            reader.onload = function () {
+                const base64Image = btoa(new Uint8Array(reader.result).reduce((data, byte) => data + String.fromCharCode(byte), ''));
+                const formData = {
+                    itemcategory: document.getElementById("itemCategory").value,
+                    itemname: document.getElementById("itemName").value,
+                    price: parseFloat(document.getElementById("price").value),
+                    quantity: document.getElementById("quantity").value,
+                    image: base64Image,
+                };
+
+                // Send a POST request to your Go backend
+                fetch("/inventory", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(formData),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data === 1) {
+                        // Redirect to /additems if the response is true
+                        alert("Item Inserted in inventory");
+                    } 
+                    if (data === 0) {
+                        // Handle other responses here, e.g., show an error message
+                        alert("Error creating");
+                    }
+                    if (data === 2){
+                        alert("ItemName already exists");
+                    }
+                    if (data === 3){
+                        alert("Username and Password Mismatch or Username not found");
+                    }
+
+                })
+                .catch(error => {
+                    // Handle errors, e.g., display an error message
+                    alert("Error creating customer profile: " + error.message);
+                });
+            };
+
+            reader.readAsArrayBuffer(imageFile);
+        });
+
+    </script>
+    
+</body>
+</html>

@@ -16,20 +16,31 @@ func Router() *gin.Engine {
 	router.Static("/signup", "./frontend/signup")
 	router.Static("/signin", "./frontend/signin")
 	router.Static("/additems", "./frontend/inventory")
+	router.Static("/admin", "./frontend/admin")
+	router.Static("/edit", "./frontend/edit")
+	//router.Static("/delete", "./frontend/delete")
+	router.Static("/seller", "./frontend/seller")
 
-	// Initialize session middleware
+
 
 	// Define your routes
-	router.GET("/getalldata", controller.Getalldata)
+	router.GET("/getallcustomerdata", controller.Getalldata)
+	router.GET("/getallinventorydata", controller.Getinventorydata)
+	router.GET("/getallsellerdata", controller.Getallsellerdata)
+
+	router.POST("/createseller", controller.CreateSeller)
 	router.POST("/create", controller.CreateProfile)
+	router.POST("/deletedata", controller.Delete)
 	router.POST("/addtocart", controller.Addtocart)
 	router.POST("/login", controller.Login)
 	router.POST("/products", controller.Products)
 	router.POST("/updatecart", controller.UpdateCart)
 	router.POST("/inventory", controller.Inventory)
 	router.POST("/search", controller.Search)
+	router.POST("/update", controller.Update)
 	router.GET("/inventorydata", controller.Getallinventorydata)
+	router.POST("/sellercheck",controller.CheckSeller)
 
-	// Protected route that requires authentication
 	return router
 }
+
