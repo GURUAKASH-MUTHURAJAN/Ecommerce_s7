@@ -34,10 +34,10 @@
             /* Change display property to flex */
             flex-direction: column;
             /* Add flex-direction: column */
+            position: relative; /* Add relative positioning */
         }
 
         .product h2 {
-
             color: #333;
             font-size: 1.5rem;
             margin-bottom: 10px;
@@ -69,6 +69,15 @@
             margin: 0 5px;
         }
 
+        /* Style the delete button */
+        .product .delete-product-icon {
+            position: absolute; /* Position it absolutely */
+            top: 10px; /* Adjust top position */
+            right: 10px; /* Adjust right position */
+            color: gray; /* Change the color to grey */
+            cursor: pointer;
+        }
+
         #total-cost {
             text-align: right;
             /* Align total cost to the left */
@@ -90,6 +99,11 @@
             border-radius: 4px;
         }
     </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart</title>
+    <!-- Include Font Awesome for the delete icon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
 
 <body>
@@ -141,6 +155,8 @@
 
                     productCard.innerHTML = `
                         <h2>${product.name}</h2>
+                        <!-- Add a bin icon for deleting the product -->
+                        <i class="delete-product-icon fa fa-trash"></i>
                         <div class="quantity">
                             <button class="decrement">-</button>
                             <span>${quantity}</span>
@@ -155,6 +171,13 @@
                     const quantitySpan = productCard.querySelector('.quantity span');
                     const priceSpan = productCard.querySelector('.price');
                     const totalSpan = productCard.querySelector('.total');
+
+                    // Add event listeners for the delete icons
+                    const deleteIcon = productCard.querySelector('.delete-product-icon');
+                    deleteIcon.addEventListener('click', () => {
+                        const productName = product.name;
+                        deleteProduct(productName);
+                    });
 
                     incrementButton.addEventListener('click', () => {
                         quantity++;
@@ -188,6 +211,39 @@
                 console.error('Error fetching products:', error);
             }
         }
+
+        async function deleteProduct(productName) {
+    try {
+        const data = {
+            token: token,
+            name: productName
+        };
+
+        const response = await fetch('/deleteproduct', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        if (result === true) {
+            alert("Deleted Successfully");
+            calculateTotalCost();
+            window.location.reload();
+            // Perform any additional actions you need on success
+
+        } else {
+            alert("No product found");
+        }
+    } catch (error) {
+        console.error('Error deleting product:', error);
+        // Show an error message
+        alert('Error deleting product');
+    }
+}
+
 
         // Function to send updated product information to the backend
         async function updateCart(productName, productPrice, productQuantity) {
@@ -229,5 +285,4 @@
         fetchAndDisplayProducts(token);
     </script>
 </body>
-
 </html>

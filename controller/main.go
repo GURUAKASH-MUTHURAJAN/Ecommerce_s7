@@ -203,3 +203,18 @@ func CheckSeller(c *gin.Context) {
 	
 
 }
+
+
+func DeleteProduct(c *gin.Context){
+	var delete models.DeleteProduct
+	if err := c.BindJSON(&delete); err != nil {
+		fmt.Println("error")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
+		return
+	}
+	fmt.Println(delete)
+	result := service.DeleteProduct(delete)
+	fmt.Println(result)
+	c.JSON(http.StatusOK, result)
+
+}

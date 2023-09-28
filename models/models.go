@@ -97,3 +97,8 @@ type Update struct {
 	Field      string `json:"field" bson:"field"`
 	New_Value  string `json:"newvalue" bson:"newvalue"`
 }
+
+type DeleteProduct struct{
+	Token string `json:"token" bson:"token"`
+	Name string `json:"name" bson:"name"` 
+}
