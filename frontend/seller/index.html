@@ -282,6 +282,7 @@
                     if (data === 1) {
                         // Handle success, e.g., show a success message
                         alert("Product deleted successfully.");
+                        document.getElementById("productNameToDelete").value="";
                     } else if (data === 0) {
                         // Handle the case where deletion was not successful, e.g., show an error message
                         alert("Error deleting product. Product not found.");
@@ -335,6 +336,10 @@ document.getElementById("updateProductForm").addEventListener("submit", function
             if (data === 1) {
                 // Handle success, e.g., show a success message
                 alert("Product updated successfully.");
+                document.getElementById("productNameToUpdate").value = "";
+                document.getElementById("attributeToUpdate").value = ""; 
+                document.getElementById("newValue").value = "";
+
             } else if (data === 0) {
                 // Handle the case where updating was not successful, e.g., show an error message
                 alert("Error updating product. Product not found or invalid attribute.");
@@ -385,6 +390,11 @@ document.getElementById("updateProductForm").addEventListener("submit", function
                     .then(data => {
                         if (data.data === true) {
                             alert("Item Inserted in inventory");
+                            document.getElementById("itemCategory").value = "";
+                            document.getElementById("itemName").value = "";
+                            document.getElementById("price").value = "";
+                            document.getElementById("quantity").value = "";
+                            document.getElementById("image").value = "";
                         } else  {
                             alert("Item Name Already Exists");
                         } 
