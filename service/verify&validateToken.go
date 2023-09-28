@@ -52,6 +52,7 @@ func ExtractCustomerID(jwtToken string, secretKey string) (string, error) {
 	return "", fmt.Errorf("invalid or expired JWT token")
 }
 
+
 func GenerateUniqueCustomerID() string {
 	// Implement your logic to generate a unique customer ID (e.g., UUID, timestamp, etc.)
 	// For example, you can use a combination of timestamp and random characters

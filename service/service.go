@@ -55,7 +55,7 @@ func Cart(customerid string) []models.Cart {
 	}
 	return Cart
 }
-func Search(productName string) []models.Inventory {
+func Search(productName string) []models.Inventory1 {
 	fmt.Println(productName)
 	filter := bson.M{"itemcategory": productName}
 	cursor, err := config.Inventory_Collection.Find(context.Background(), filter)
@@ -63,16 +63,15 @@ func Search(productName string) []models.Inventory {
 		log.Fatal(err)
 	}
 	defer cursor.Close(context.Background())
-	var Inventory []models.Inventory
+	var Inventory []models.Inventory1
 	for cursor.Next(context.Background()) {
-		var inventory models.Inventory
+		var inventory models.Inventory1
 		err := cursor.Decode(&inventory)
 		if err != nil {
 			log.Fatal(err)
 		}
 		Inventory = append(Inventory, inventory)
 	}
-	fmt.Println(Inventory)
 	return Inventory
 }
 func Getalldata() []models.Customer {
@@ -162,12 +161,12 @@ func Addtocart(addtocart models.Addtocart1) bool {
 	if cursor.RemainingBatchLength() == 0 {
 		// Item not found, so insert a new item with quantity 1
 		cart := addcart{CustomerId: addtocart.CustomerId, Name: addtocart.Name, Price: addtocart.Price, Quantity: 1}
-		inserted, err := config.Cart_Collection.InsertOne(context.Background(), cart)
+		_, err := config.Cart_Collection.InsertOne(context.Background(), cart)
 		if err != nil {
 			log.Fatal(err)
 			return false
 		}
-		fmt.Println("Inserted", inserted.InsertedID)
+		
 		return true
 	}
 	fmt.Println("Not in db")
@@ -179,7 +178,6 @@ func Addtocart(addtocart models.Addtocart1) bool {
 		if err != nil {
 			log.Fatal(err)
 		}
-		fmt.Println("Decoded")
 	}
 	// Item already exists, update its quantity
 	cart.Quantity++
@@ -191,7 +189,6 @@ func Addtocart(addtocart models.Addtocart1) bool {
 		log.Fatal(err)
 		return false
 	}
-	fmt.Println("Updated quantity for", addtocart.Name)
 	return true
 }
 
@@ -214,7 +211,6 @@ func Getallsellerdata() []models.Seller {
 	return Seller
 }
 func CreateSeller(seller models.Seller) bool {
-	fmt.Println("in seller")
 	if seller.Password != seller.ConfirmPassword {
 		return false
 	}
@@ -225,14 +221,13 @@ func CreateSeller(seller models.Seller) bool {
 		log.Fatal(err)
 	}
 	if cursor.RemainingBatchLength() == 0 {
-		fmt.Println("Seller email already exitst")
-		inserted, err := config.Seller_Collection.InsertOne(context.Background(), seller)
+		seller.SellerId = GenerateUniqueCustomerID()
+		_, err := config.Seller_Collection.InsertOne(context.Background(), seller)
 		if err != nil {
 			fmt.Println("error ")
 			log.Fatal(err)
 
 		}
-		fmt.Println("Inserted", inserted.InsertedID)
 		return true
 	}
 	return false
@@ -244,20 +239,17 @@ func Login(details models.Login) (string, bool, error) {
 	err := config.Customer_Collection.FindOne(context.Background(), filter).Decode(&customer)
 	if err != nil {
 		// Handle the case where the user is not found
-		fmt.Println("1")
 		return "", false, err
 	}
 
 	// Verify the password (You should use a secure password hashing library here)
 	if customer.Password != details.Password {
-		fmt.Println("2")
 		// Passwords don't match
 		return "", false, nil
 	}
 
 	token, err := CreateToken(customer.Email, customer.CustomerId)
 	if err != nil {
-		fmt.Println("3")
 		return "", false, err
 
 	}
@@ -265,7 +257,7 @@ func Login(details models.Login) (string, bool, error) {
 	return token, true, nil
 }
 func Inventory(inventory models.Inventory) int {
-
+	
 	filter := bson.M{"itemname": inventory.ItemName}
 	cursor, err := config.Inventory_Collection.Find(context.Background(), filter)
 	defer cursor.Close(context.Background())
@@ -273,13 +265,25 @@ func Inventory(inventory models.Inventory) int {
 		log.Fatal(err)
 	}
 	if cursor.RemainingBatchLength() == 0 {
-		fmt.Println("No items available")
-		inserted, err := config.Inventory_Collection.InsertOne(context.Background(), inventory)
+		inventory1:=models.Inventory1{
+			ItemCategory: inventory.ItemCategory,
+			ItemName: inventory.ItemName,
+			Price: inventory.Price,
+			Quantity: inventory.Quantity,
+			Image: inventory.Image,
+		}
+		var seller models.Seller
+		err:=config.Seller_Collection.FindOne(context.TODO(), bson.M{"sellerid": inventory.SellerId}).Decode(&seller)
 		if err != nil {
 			log.Fatal(err)
 			return 0
 		}
-		fmt.Println("Inserted", inserted.InsertedID)
+		inventory1.SellerName=seller.Seller_Name
+		_, err1 := config.Inventory_Collection.InsertOne(context.Background(), inventory1)
+		if err1 != nil {
+			log.Fatal(err1)
+			return 0
+		}
 		return 1
 	}
 	return 2
@@ -312,9 +316,9 @@ func Update(update models.Update) bool {
 			filter := bson.M{"email": update.IdName}
 			update1 := bson.M{"$set": bson.M{update.Field: intValue}}
 			options := options.Update()
-			id, err := config.Customer_Collection.UpdateOne(context.TODO(), filter, update1, options)
-			fmt.Println(id.UpsertedID)
-			if err != nil {
+			_, err1 := config.Customer_Collection.UpdateOne(context.TODO(), filter, update1, options)
+			
+			if err1 != nil {
 				fmt.Println("error while updating")
 				return false
 			}
@@ -325,8 +329,7 @@ func Update(update models.Update) bool {
 		filter := bson.M{"email": update.IdName}
 		update1 := bson.M{"$set": bson.M{update.Field: update.New_Value}}
 		options := options.Update()
-		id, err := config.Customer_Collection.UpdateOne(context.TODO(), filter, update1, options)
-		fmt.Println(id.UpsertedID)
+		_, err := config.Customer_Collection.UpdateOne(context.TODO(), filter, update1, options)
 		if err != nil {
 			fmt.Println("error while updating")
 			return false
@@ -351,9 +354,8 @@ func Update(update models.Update) bool {
 			filter := bson.M{"itemname": update.IdName}
 			update1 := bson.M{"$set": bson.M{update.Field: intValue}}
 			options := options.Update()
-			id, err := config.Inventory_Collection.UpdateOne(context.TODO(), filter, update1, options)
-			fmt.Println(id)
-			if err != nil {
+			_, err1 := config.Inventory_Collection.UpdateOne(context.TODO(), filter, update1, options)
+			if err1 != nil {
 				fmt.Println("error while updating")
 				return false
 			}
@@ -377,32 +379,29 @@ func Update(update models.Update) bool {
 func Delete(delete models.Delete)bool{
 	if delete.Collection == "customer"{
 		filter := bson.M{"email":delete.IdValue}
-		result,err:=config.Customer_Collection.DeleteOne(context.Background(),filter)
+		_,err:=config.Customer_Collection.DeleteOne(context.Background(),filter)
 		if err != nil{
 			log.Fatal(err)
 			return false
 		}
-		fmt.Println(result)
 		return true
 	}
 	if delete.Collection == "seller"{
 		filter := bson.M{"selleremail":delete.IdValue}
-		result,err:=config.Seller_Collection.DeleteOne(context.Background(),filter)
+		_,err:=config.Seller_Collection.DeleteOne(context.Background(),filter)
 		if err != nil{
 			log.Fatal(err)
 			return false
 		}
-		fmt.Println(result)
 		return true
 	}
 	if delete.Collection == "inventory"{
 		filter := bson.M{"itemname":delete.IdValue}
-		result,err:=config.Inventory_Collection.DeleteOne(context.Background(),filter)
+		_,err:=config.Inventory_Collection.DeleteOne(context.Background(),filter)
 		if err != nil{
 			log.Fatal(err)
 			return false
 		}
-		fmt.Println(result)
 		return true
 	}
 	return true
@@ -413,12 +412,17 @@ func isValidNumber(s string) bool {
 	return numericRegex.MatchString(s)
 }
 
-func CheckSeller(check models.Login)bool{
+func CheckSeller(check models.Login)(string,bool,error){
 	var seller models.Seller
 	filter :=  bson.M{"selleremail":check.Email}
 	config.Seller_Collection.FindOne(context.Background(),filter).Decode(&seller)
-	if check.Password == seller.Password{
-		return true
+	if check.Password != seller.Password{
+		return "",false,fmt.Errorf("InvalidPassword")
 	}
-	return false
+	result,err:=CreateToken(seller.Seller_Email,seller.SellerId)
+		if err !=nil{
+			return "",false,err
+		}
+		fmt.Println(result)
+		return result,true,nil
 }

@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seller Dashboard</title>
 </head>
+
 <body>
+    <script>
+        var token 
+    </script>
     <div id="login-form">
         <h1>Seller Login</h1>
         <label for="email">Email:</label>
@@ -74,21 +79,22 @@
                 },
                 body: JSON.stringify(loginData)
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data === true) {
-                    alert("Login Successful");
-
-                    // Hide the login form and show the dashboard
-                    loginForm.style.display = "none";
-                    dashboard.style.display = "block";
-                } else {
-                    alert("Invalid email or password. Please try again.");
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-            });
+                .then(response => response.json())
+                .then(data => {
+                    if (data.token) {
+                        // Redirect to the "/home" URL with the received token
+                        token = data.token
+                        alert("Login Sucess");
+                        loginForm.style.display = "none";
+                        dashboard.style.display = "block";
+                    } else {
+                        // Handle the case where login was not successful
+                        alert("Login failed. Please check your credentials.");
+                    }
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                });
         });
 
         // Event listener for the "Create Product" button
@@ -107,12 +113,14 @@
             reader.onload = function () {
                 const base64Image = btoa(new Uint8Array(reader.result).reduce((data, byte) => data + String.fromCharCode(byte), ''));
                 const formData = {
+                    sellerid:token,
                     itemcategory: document.getElementById("itemCategory").value,
                     itemname: document.getElementById("itemName").value,
                     price: parseFloat(document.getElementById("price").value),
                     quantity: document.getElementById("quantity").value,
                     image: base64Image,
                 };
+                
 
                 // Send a POST request to your Go backend
                 fetch("/inventory", {
@@ -120,36 +128,38 @@
                     headers: {
                         "Content-Type": "application/json",
                     },
+                    
                     body: JSON.stringify(formData),
                 })
-                .then(response => response.json())
-                .then(data => {
-                    if (data === 1) {
-                        // Redirect to /additems if the response is true
-                        alert("Item Inserted in inventory");
-                    } 
-                    if (data === 0) {
-                        // Handle other responses here, e.g., show an error message
-                        alert("Error creating");
-                    }
-                    if (data === 2){
-                        alert("ItemName already exists");
-                    }
-                    if (data === 3){
-                        alert("Username and Password Mismatch or Username not found");
-                    }
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data === 1) {
+                            // Redirect to /additems if the response is true
+                            alert("Item Inserted in inventory");
+                        }
+                        if (data === 0) {
+                            // Handle other responses here, e.g., show an error message
+                            alert("Error creating");
+                        }
+                        if (data === 2) {
+                            alert("ItemName already exists");
+                        }
+                        if (data === 3) {
+                            alert("Username and Password Mismatch or Username not found");
+                        }
 
-                })
-                .catch(error => {
-                    // Handle errors, e.g., display an error message
-                    alert("Error creating customer profile: " + error.message);
-                });
+                    })
+                    .catch(error => {
+                        // Handle errors, e.g., display an error message
+                        alert("Error creating customer profile: " + error.message);
+                    });
             };
 
             reader.readAsArrayBuffer(imageFile);
         });
 
     </script>
-    
+
 </body>
+
 </html>

@@ -13,12 +13,10 @@ import (
 
 func Getinventorydata(c *gin.Context) {
 	Inventorydata := service.Getinventorydata()
-	fmt.Println(Inventorydata)
 	c.JSON(http.StatusOK, Inventorydata)
 }
 func Getalldata(c *gin.Context) {
 	alltransaction := service.Getalldata()
-	fmt.Println(alltransaction)
 	c.JSON(http.StatusOK, alltransaction)
 }
 func CreateSeller(c *gin.Context) {
@@ -28,16 +26,12 @@ func CreateSeller(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
 		return
 	}
-	fmt.Println(seller)
 	createseller := service.CreateSeller(seller)
-
 	c.JSON(http.StatusOK, createseller)
 
 }
 func Getallsellerdata(c *gin.Context) {
-	fmt.Println("In seller")
 	Getallsellerdata := service.Getallsellerdata()
-	fmt.Println(Getallsellerdata)
 	c.JSON(http.StatusOK, Getallsellerdata)
 
 }
@@ -79,7 +73,6 @@ func Login(c *gin.Context) {
 
 func Products(c *gin.Context) {
 	var cartproducts *models.Addtocart
-
 	if err := c.BindJSON(&cartproducts); err != nil {
 		fmt.Println("error")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
@@ -92,7 +85,6 @@ func Products(c *gin.Context) {
 		return
 	}
 	cart := service.Cart(token)
-	fmt.Println(cart)
 	c.JSON(http.StatusOK, cart)
 }
 
@@ -103,8 +95,6 @@ func Addtocart(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
 		return
 	}
-	fmt.Println(addtocart.Token)
-	fmt.Println(constants.SecretKey)
 	token, err := service.ExtractCustomerID(addtocart.Token, constants.SecretKey)
 	if err != nil {
 		fmt.Println("errorin Extaxt Token")
@@ -115,8 +105,6 @@ func Addtocart(c *gin.Context) {
 	addtocart1.CustomerId = token
 	addtocart1.Name = addtocart.Name
 	addtocart1.Price = addtocart.Price
-
-	fmt.Println(addtocart)
 	result := service.Addtocart(addtocart1)
 	c.JSON(http.StatusOK, result)
 
@@ -129,19 +117,23 @@ func CreateProfile(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
 		return
 	}
-	fmt.Println(profile)
 	result := service.Insert(profile)
 	c.JSON(http.StatusOK, result)
 }
 func Inventory(c *gin.Context) {
 	var inventory models.Inventory
-	fmt.Println("in inventory")
 	if err := c.BindJSON(&inventory); err != nil {
 		fmt.Println("error")
 		log.Fatal(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
 		return
 	}
+	sellerid,err := service.ExtractCustomerID(inventory.SellerId,constants.SecretKey)
+	if err != nil {
+		log.Fatal(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Token : while Extracting"})
+	}
+	inventory.SellerId = sellerid
 	result := service.Inventory(inventory)
 	fmt.Println(result)
 	c.JSON(http.StatusOK, result)
@@ -149,7 +141,6 @@ func Inventory(c *gin.Context) {
 }
 func Getallinventorydata(c *gin.Context) {
 	result := service.Search(SearchName)
-	fmt.Println(result)
 	c.JSON(http.StatusOK, result)
 }
 
@@ -166,39 +157,32 @@ func Search(c *gin.Context) {
 		return
 	}
 	SearchName = search.ProductName
-	fmt.Println(search)
 }
 
-func Update(c *gin.Context){
+func Update(c *gin.Context) {
 	var update models.Update
 	if err := c.BindJSON(&update); err != nil {
 		fmt.Println("error")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
 		return
 	}
-	fmt.Println(update)
 	result := service.Update(update)
 	c.JSON(http.StatusOK, result)
-	
 }
 
-func Delete(c *gin.Context){
+func Delete(c *gin.Context) {
 	var delete models.Delete
 	if err := c.BindJSON(&delete); err != nil {
 		fmt.Println("error")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
 		return
 	}
-	fmt.Println(delete)
 	result := service.Delete(delete)
-	fmt.Println(result)
 	c.JSON(http.StatusOK, result)
-
 
 }
 
-
-func CheckSeller(c *gin.Context){
+func CheckSeller(c *gin.Context) {
 	var check models.Login
 	if err := c.BindJSON(&check); err != nil {
 		fmt.Println("error")
@@ -206,8 +190,16 @@ func CheckSeller(c *gin.Context){
 		return
 	}
 	fmt.Println(check)
-	result := service.CheckSeller(check)
-	fmt.Println(result)
-	c.JSON(http.StatusOK, result)
+	token,success,err := service.CheckSeller(check)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return
+	}
+	if success {
+		c.JSON(http.StatusOK, gin.H{"token": token})
+	} else {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+	}
+	
 
 }
