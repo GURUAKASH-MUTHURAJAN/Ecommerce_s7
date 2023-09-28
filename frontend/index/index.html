@@ -17,16 +17,36 @@
         }
 
         :root {
-            --clr: #222327;
+            --clr: #000;
         }
 
         body {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: var(--clr);
+            margin: 0;
+            width: 100vw;
+            height: 100vh;
+            justify-content: flex-start;
+            align-items: flex-start;
+            background: url('assests/site.jpg') top left/cover no-repeat;
+            padding-top: 150px;
+            padding-left: 100PX;
+            /* Add padding to move the content down */
         }
+
+        .quotes {
+            color: #fff;
+            text-align: left;
+            font-size: large;
+            margin-left: -350px;
+            margin-top: 18%;
+            padding-right: 45%;
+            font-weight: 500px;
+            /* Adjust this value to control the left spacing */
+            font-family:fantasy;
+            /* Apply the custom font */
+        }
+
+
 
         .navigation {
             position: relative;
@@ -128,31 +148,34 @@
             box-shadow: -1px -10px 0 0 var(--clr);
         }
 
-        .navigation ul li:nth-child(1).active ~ .indicator {
+        .navigation ul li:nth-child(1).active~.indicator {
             transform: translateX(calc(70px * 0));
         }
 
-        .navigation ul li:nth-child(2).active ~ .indicator {
+        .navigation ul li:nth-child(2).active~.indicator {
             transform: translateX(calc(70px * 1));
         }
 
-        .navigation ul li:nth-child(3).active ~ .indicator {
+        .navigation ul li:nth-child(3).active~.indicator {
             transform: translateX(calc(70px * 2));
         }
 
-        .navigation ul li:nth-child(4).active ~ .indicator {
+        .navigation ul li:nth-child(4).active~.indicator {
             transform: translateX(calc(70px * 3));
         }
 
-        .navigation ul li:nth-child(5).active ~ .indicator {
+        .navigation ul li:nth-child(5).active~.indicator {
             transform: translateX(calc(70px * 4));
         }
     </style>
 </head>
 
 <body>
+
     <div class="navigation">
+
         <ul>
+
             <li class="list active">
                 <a href="http://localhost:8081/home" target="_self">
                     <span class="icon"><ion-icon name="home-outline"></ion-icon></span>
@@ -190,14 +213,18 @@
             <div class="indicator"></div>
         </ul>
     </div>
+    <div class="quotes">
+        <p>Your time is limited, so don’t waste it living someone else’s life. Don’t be trapped by dogma – which is
+            living with the results of other people’s thinking – Steve Jobs</p>
+    </div>
     <script>
         const list = document.querySelectorAll('.list');
-        function activeLink(){
-          list.forEach(item => item.classList.remove('active'));
-          this.classList.add('active');
+        function activeLink() {
+            list.forEach(item => item.classList.remove('active'));
+            this.classList.add('active');
         }
-        list.forEach(item => 
-          item.addEventListener('click', activeLink))
+        list.forEach(item =>
+            item.addEventListener('click', activeLink))
     </script>
     <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
