@@ -20,6 +20,15 @@ type Customer struct {
 	Pincode         int64  `json:"pincode" bson:"pincode"`
 }
 type Inventory struct {
+	SellerId     string  `json:"sellerid" bson:"sellerid"`
+	ItemCategory string  `json:"itemcategory" bson:"itemcategory"`
+	ItemName     string  `json:"itemname" bson:"itemname"`
+	Price        float64 `json:"price" bson:"price"`
+	Quantity     string  `json:"quantity" bson:"quantity"`
+	Image        string  `json:"image" bson:"image"`
+}
+type Inventory1 struct {
+	SellerName     string  `json:"sellername" bson:"sellername"`
 	ItemCategory string  `json:"itemcategory" bson:"itemcategory"`
 	ItemName     string  `json:"itemname" bson:"itemname"`
 	Price        float64 `json:"price" bson:"price"`
@@ -33,6 +42,7 @@ type Addtocart1 struct {
 	Price      float64 `json:"price" bson:"price"`
 }
 type Seller struct {
+	SellerId        string `json:"sellerid" bson:"sellerid"`
 	Seller_Name     string `json:"sellername" bson:"sellername"`
 	Seller_Email    string `json:"selleremail" bson:"selleremail"`
 	Password        string `json:"password" bson:"password"`
