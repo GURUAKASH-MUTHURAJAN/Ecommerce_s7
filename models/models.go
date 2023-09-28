@@ -97,8 +97,15 @@ type Update struct {
 	Field      string `json:"field" bson:"field"`
 	New_Value  string `json:"newvalue" bson:"newvalue"`
 }
-
+type DeleteBySeller struct{
+	ProductName string `json:"productname" bson:"productname"`
+}
 type DeleteProduct struct{
 	Token string `json:"token" bson:"token"`
 	Name string `json:"name" bson:"name"` 
+}
+type UpdateProduct struct{
+	ProductName string `json:"productname" bson:"productname"`
+	Attribute string `json:"attribute" bson:"attribute"`
+	New_Value int32 `json:"newvalue" bson:"newvalue"`
 }

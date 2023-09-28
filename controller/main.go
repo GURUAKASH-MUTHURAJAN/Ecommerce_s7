@@ -134,9 +134,16 @@ func Inventory(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid Token : while Extracting"})
 	}
 	inventory.SellerId = sellerid
-	result := service.Inventory(inventory)
-	fmt.Println(result)
-	c.JSON(http.StatusOK, result)
+	success,err := service.Inventory(inventory)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+		return
+	}
+	if success {
+		c.JSON(http.StatusOK, gin.H{"data": success})
+	} else {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+	}
 
 }
 func Getallinventorydata(c *gin.Context) {
@@ -217,4 +224,27 @@ func DeleteProduct(c *gin.Context){
 	fmt.Println(result)
 	c.JSON(http.StatusOK, result)
 
+}
+
+func DeleteProductBySeller(c *gin.Context){
+	var delete models.DeleteBySeller
+	if err := c.BindJSON(&delete); err != nil {
+		fmt.Println("error")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
+		return
+	}
+	result:= service.DeleteProductBySeller(delete)
+	c.JSON(http.StatusOK, result)
+
+}
+
+func UpdateProductBySeller(c *gin.Context){
+	var update models.UpdateProduct
+	if err := c.BindJSON(&update); err != nil {
+		fmt.Println("error")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid JSON data"})
+		return
+	}
+	result:= service.UpdateProductBySeller(update)
+	c.JSON(http.StatusOK, result)
 }

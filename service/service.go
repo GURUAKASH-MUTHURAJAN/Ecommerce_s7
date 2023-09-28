@@ -257,15 +257,15 @@ func Login(details models.Login) (string, bool, error) {
 
 	return token, true, nil
 }
-func Inventory(inventory models.Inventory) int {
-
+func Inventory(inventory models.Inventory) (bool, error) {
 	filter := bson.M{"itemname": inventory.ItemName}
 	cursor, err := config.Inventory_Collection.Find(context.Background(), filter)
-	defer cursor.Close(context.Background())
 	if err != nil {
 		log.Fatal(err)
+		return false, err
 	}
 	if cursor.RemainingBatchLength() == 0 {
+		fmt.Println("1")
 		inventory1 := models.Inventory1{
 			ItemCategory: inventory.ItemCategory,
 			ItemName:     inventory.ItemName,
@@ -276,18 +276,21 @@ func Inventory(inventory models.Inventory) int {
 		var seller models.Seller
 		err := config.Seller_Collection.FindOne(context.TODO(), bson.M{"sellerid": inventory.SellerId}).Decode(&seller)
 		if err != nil {
-			log.Fatal(err)
-			return 0
+			fmt.Println("2")
+			return false, err
 		}
 		inventory1.SellerName = seller.Seller_Name
 		_, err1 := config.Inventory_Collection.InsertOne(context.Background(), inventory1)
 		if err1 != nil {
-			log.Fatal(err1)
-			return 0
+			fmt.Println("3")
+			return false, err1
 		}
-		return 1
+		fmt.Println("5")
+		return true, nil
+	} else {
+		fmt.Println("6")
+		return false, fmt.Errorf("item name already exists")
 	}
-	return 2
 
 }
 
@@ -430,7 +433,7 @@ func CheckSeller(check models.Login) (string, bool, error) {
 
 func DeleteProduct(delete models.DeleteProduct) bool {
 	customerid, err := ExtractCustomerID(delete.Token, constants.SecretKey)
-	if err != nil{
+	if err != nil {
 		log.Fatal(err)
 		return false
 	}
@@ -446,4 +449,26 @@ func DeleteProduct(delete models.DeleteProduct) bool {
 	}
 
 	return true
+}
+
+func UpdateProductBySeller(update models.UpdateProduct) int {
+	filter := bson.M{"itemname": update.ProductName}
+	update1 := bson.M{"$set": bson.M{update.Attribute: update.New_Value}}
+	options := options.Update()
+	_, err := config.Inventory_Collection.UpdateOne(context.TODO(), filter, update1, options)
+	if err != nil {
+		fmt.Println("error while updating")
+		return 0
+	}
+	return 1
+}
+
+func DeleteProductBySeller(delete models.DeleteBySeller) int {
+	filter := bson.M{"itemname": delete.ProductName}
+	_, err := config.Inventory_Collection.DeleteOne(context.Background(), filter)
+	if err != nil {
+		fmt.Println("error while updating")
+		return 0
+	}
+	return 1
 }

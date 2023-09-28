@@ -40,6 +40,9 @@ func Router() *gin.Engine {
 	router.GET("/inventorydata", controller.Getallinventorydata)
 	router.POST("/sellercheck",controller.CheckSeller)
 	router.POST("/deleteproduct",controller.DeleteProduct)
+	router.POST("/deleteproductbyseller",controller.DeleteProductBySeller)
+	router.POST("/updateproductbyseller",controller.UpdateProductBySeller)
+
 
 	return router
 }
